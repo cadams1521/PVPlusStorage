@@ -5,70 +5,70 @@ namespace PVSLibrary
 {
     public static class Common
     {
-        public static ScheduleRequestModel SampleScheduleRequestCL()
+        public static ScheduleRequest SampleScheduleRequestCL()
         {
-            var jsonObject = new ScheduleRequestModel();
+            var jsonObject = new ScheduleRequest();
             jsonObject.Name = "ScheduleRequestCL";
-            List<TimeStampModel> timestamps = SampleTimeStampModel("CL");
-            jsonObject.TimeStamps = timestamps;
-            List<BatteryModel> batteries = SampleBatteryModel();
+            List<TimeStamp> timeStamps = SampleTimeStamp("CL");
+            jsonObject.TimeStamps = timeStamps;
+            List<Battery> batteries = SampleBattery();
             jsonObject.Batteries = batteries;
             return jsonObject;
         }
 
-        public static ScheduleRequestModel SampleScheduleRequestLM()
+        public static ScheduleRequest SampleScheduleRequestLM()
         {
-            var jsonObject = new ScheduleRequestModel();
+            var jsonObject = new ScheduleRequest();
             jsonObject.Name = "ScheduleRequestLM";
-            List<TimeStampModel> timestamps = SampleTimeStampModel("LM");
-            jsonObject.TimeStamps = timestamps;
-            List<BatteryModel> batteries = SampleBatteryModel();
+            List<TimeStamp> timeStamps = SampleTimeStamp("LM");
+            jsonObject.TimeStamps = timeStamps;
+            List<Battery> batteries = SampleBattery();
             jsonObject.Batteries = batteries;
             return jsonObject;
         }
 
-        public static ScheduleResponseModel SampleScheduleResponseLC()
+        public static ScheduleResponse SampleScheduleResponseLC()
         {
-            var jsonObject = new ScheduleResponseModel();
+            var jsonObject = new ScheduleResponse();
             jsonObject.Name = "ScheduleResponseLC";
-            List<TimeStampModel> timestamps = SampleTimeStampModel("LC");
-            jsonObject.TimeStamps = timestamps;
-            List<CommandEventModel> commandevent = SampleCommandEventModel();
-            jsonObject.CommandEvents = commandevent;
+            List<TimeStamp> timeStamps = SampleTimeStamp("LC");
+            jsonObject.TimeStamps = timeStamps;
+            List<CommandEvent> commandEvent = SampleCommandEvent();
+            jsonObject.CommandEvents = commandEvent;
             return jsonObject;
         }
 
-        public static ScheduleResponseModel SampleScheduleResponseML()
+        public static ScheduleResponse SampleScheduleResponseML()
         {
-            var jsonObject = new ScheduleResponseModel();
+            var jsonObject = new ScheduleResponse();
             jsonObject.Name = "ScheduleResponseML";
-            List<TimeStampModel> timestamps = SampleTimeStampModel("ML");
-            jsonObject.TimeStamps = timestamps;
-            List<CommandEventModel> commandevent = SampleCommandEventModel();
-            jsonObject.CommandEvents = commandevent;
+            List<TimeStamp> timeStamps = SampleTimeStamp("ML");
+            jsonObject.TimeStamps = timeStamps;
+            List<CommandEvent> commandEvent = SampleCommandEvent();
+            jsonObject.CommandEvents = commandEvent;
             return jsonObject;
         }
 
-        static List<BatteryModel> SampleBatteryModel()
+        static List<Battery> SampleBattery()
         {
-            List<BatteryModel> batteries = new List<BatteryModel>();
-            batteries.Add(new BatteryModel { BatteryID = "A1", SOCMwH = 68.123m, SOCPer = 97, SOHPer = 100 });
-            batteries.Add(new BatteryModel() { BatteryID = "A2", SOCMwH = 68.123m, SOCPer = 97, SOHPer = 100 });
-            batteries.Add(new BatteryModel() { BatteryID = "B7", SOCMwH = 68.123m, SOCPer = 97, SOHPer = 100 });
-            batteries.Add(new BatteryModel() { BatteryID = "M10", SOCMwH = 68.123m, SOCPer = 97, SOHPer = 100 });
-            batteries.Add(new BatteryModel() { BatteryID = "P1", SOCMwH = 68.123m, SOCPer = 97, SOHPer = 100 });
-            batteries.Add(new BatteryModel() { BatteryID = "L17", SOCMwH = 68.123m, SOCPer = 97, SOHPer = 100 });
-            batteries.Add(new BatteryModel() { BatteryID = "T2", SOCMwH = 68.123m, SOCPer = 97, SOHPer = 100 });
-            batteries.Add(new BatteryModel() { BatteryID = "A28", SOCMwH = 68.123m, SOCPer = 97, SOHPer = 100 });
+            List<Battery> batteries = new List<Battery>();
+            batteries.Add(new Battery { BatteryID = "A1", SOCMwH = 68.123m, SOCPer = 97, SOHPer = 100 });
+            batteries.Add(new Battery() { BatteryID = "A2", SOCMwH = 68.123m, SOCPer = 97, SOHPer = 100 });
+            batteries.Add(new Battery() { BatteryID = "B7", SOCMwH = 68.123m, SOCPer = 97, SOHPer = 100 });
+            batteries.Add(new Battery() { BatteryID = "M10", SOCMwH = 68.123m, SOCPer = 97, SOHPer = 100 });
+            batteries.Add(new Battery() { BatteryID = "P1", SOCMwH = 68.123m, SOCPer = 97, SOHPer = 100 });
+            batteries.Add(new Battery() { BatteryID = "L17", SOCMwH = 68.123m, SOCPer = 97, SOHPer = 100 });
+            batteries.Add(new Battery() { BatteryID = "T2", SOCMwH = 68.123m, SOCPer = 97, SOHPer = 100 });
+            batteries.Add(new Battery() { BatteryID = "A28", SOCMwH = 68.123m, SOCPer = 97, SOHPer = 100 });
             return batteries;
         }
 
-        static List<CommandEventModel> SampleCommandEventModel()
+        static List<CommandEvent> SampleCommandEvent()
         {
-            List<CommandEventModel> commandevent = new List<CommandEventModel>();
+            List<CommandEvent> commandEvent = new List<CommandEvent>();
             for (int i = 0; i <= 23; i++)
             {
-                commandevent.Add(new CommandEventModel()
+                commandEvent.Add(new CommandEvent()
                 {
                     EventID = i + 1,
                     Enable = true,
@@ -90,40 +90,40 @@ namespace PVSLibrary
                     GCen = false
                 });
             }
-            return commandevent;
+            return commandEvent;
         }
 
-        static List<TimeStampModel> SampleTimeStampModel(string strModel)
+        static List<TimeStamp> SampleTimeStamp(string strModel)
         {
-            List<TimeStampModel> timestamps = new List<TimeStampModel>();
+            List<TimeStamp> timeStamps = new List<TimeStamp>();
             switch (strModel)
             {
                 case "CL":
-                    timestamps.Add(new TimeStampModel { Source = "CL", Timestamp = SetTimestamp(0) });
+                    timeStamps.Add(new TimeStamp { Source = "CL", Timestamp = SetTimestamp(0) });
                     break;
                 case "LM":
-                    timestamps.Add(new TimeStampModel { Source = "CL", Timestamp = SetTimestamp(-15) });
-                    timestamps.Add(new TimeStampModel { Source = "LM", Timestamp = SetTimestamp(0) });
+                    timeStamps.Add(new TimeStamp { Source = "CL", Timestamp = SetTimestamp(-15) });
+                    timeStamps.Add(new TimeStamp { Source = "LM", Timestamp = SetTimestamp(0) });
                     break;
                 case "ML":
-                    timestamps.Add(new TimeStampModel { Source = "CL", Timestamp = SetTimestamp(-30) });
-                    timestamps.Add(new TimeStampModel { Source = "LM", Timestamp = SetTimestamp(-15) });
-                    timestamps.Add(new TimeStampModel { Source = "ML", Timestamp = SetTimestamp(0) });
+                    timeStamps.Add(new TimeStamp { Source = "CL", Timestamp = SetTimestamp(-30) });
+                    timeStamps.Add(new TimeStamp { Source = "LM", Timestamp = SetTimestamp(-15) });
+                    timeStamps.Add(new TimeStamp { Source = "ML", Timestamp = SetTimestamp(0) });
                     break;
                 case "LC":
-                    timestamps.Add(new TimeStampModel { Source = "CL", Timestamp = SetTimestamp(-45) });
-                    timestamps.Add(new TimeStampModel { Source = "LM", Timestamp = SetTimestamp(-30) });
-                    timestamps.Add(new TimeStampModel { Source = "ML", Timestamp = SetTimestamp(-15) });
-                    timestamps.Add(new TimeStampModel { Source = "LC", Timestamp = SetTimestamp(0) });
+                    timeStamps.Add(new TimeStamp { Source = "CL", Timestamp = SetTimestamp(-45) });
+                    timeStamps.Add(new TimeStamp { Source = "LM", Timestamp = SetTimestamp(-30) });
+                    timeStamps.Add(new TimeStamp { Source = "ML", Timestamp = SetTimestamp(-15) });
+                    timeStamps.Add(new TimeStamp { Source = "LC", Timestamp = SetTimestamp(0) });
                     break;
             }
-            return timestamps;
+            return timeStamps;
         }
 
-        public static string SetTimestamp(short offsetSec)
+        public static string SetTimestamp(short offsetSeconds)
         {
-            DateTime temp = DateTime.Now;
-            DateTime time = temp + new TimeSpan(0, 0, offsetSec);
+            DateTime currentTime = DateTime.Now;
+            DateTime time = currentTime + new TimeSpan(0, 0, offsetSeconds);
             return time.ToString("yyyyMMddHHmmss");
         }
     }

@@ -1,4 +1,6 @@
-﻿namespace PVSUI
+﻿using System;
+
+namespace PVSUI
 {
     partial class PVSMainForm
     {
@@ -275,7 +277,6 @@
             this.Margin = new System.Windows.Forms.Padding(6, 7, 6, 7);
             this.Name = "PVSMainForm";
             this.Text = "PVS Main";
-            this.Load += new System.EventHandler(this.PVSMainForm_Load);
             this.grpObjects.ResumeLayout(false);
             this.grpObjects.PerformLayout();
             this.grpHMAC.ResumeLayout(false);

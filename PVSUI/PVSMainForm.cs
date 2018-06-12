@@ -14,6 +14,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Text.RegularExpressions;
 using System.IO;
+using System.Configuration;
 
 namespace PVSUI
 {
@@ -22,10 +23,6 @@ namespace PVSUI
         public PVSMainForm()
         {
             InitializeComponent();
-        }
-
-        private void PVSMainForm_Load(object sender, EventArgs e)
-        {
         }
 
         private void butSerScheduleRequestCL_Click(object sender, EventArgs e)
@@ -47,112 +44,36 @@ namespace PVSUI
         private void butDesScheduleRequestCL_Click(object sender, EventArgs e)
         {
             SetBackColorHighlight(sender, "Schedule");
-
             var jsonObject = PVSLibrary.Common.SampleScheduleRequestCL();
             string strObj = JsonConvert.SerializeObject(jsonObject, Formatting.Indented);
             AdjustTextOutput(strObj, true);
+            DisplayObjectDetailsToOutput(strObj);
 
-            var jsonDef = new { Name = "" };
-            var jsonObj = JsonConvert.DeserializeAnonymousType(strObj, jsonDef);
-            string jsonName = jsonObj.Name;
-            if (jsonName == "ScheduleRequestCL")
-            {
-                AdjustTextOutput("Name = " + jsonName.ToString(), false);
-                var jRequestCL = JsonConvert.DeserializeObject<ScheduleRequestModel>(strObj);
-                int timCount = 0;
-                foreach (var tim in jRequestCL.TimeStamps)
-                {
-                    AdjustTextOutput("Timestamps: [" + timCount.ToString() +
-                        "] Source = " + tim.Source.ToString() +
-                        ", TimeStamp = " + tim.Timestamp.ToString(), false);
-                    timCount++;
-                }
-                int batCount = 0;
-                foreach (var bat in jRequestCL.Batteries)
-                {
-                    AdjustTextOutput("Batteries: [" + batCount.ToString() +
-                        "] ID = " + bat.BatteryID.ToString() +
-                        ", SOCMwh = " + bat.SOCMwH.ToString() +
-                        ", SOCPer = " + bat.SOCPer.ToString() +
-                        ", SOHPer = " + bat.SOHPer.ToString(), false);
-                    batCount++;
-                }
-            }
-            else
-            {
-                AdjustTextOutput("Invalid JSON", false);
-            }
         }
 
         private void butDesScheduleResponseLC_Click(object sender, EventArgs e)
         {
             SetBackColorHighlight(sender, "Schedule");
-
             var jsonObject = PVSLibrary.Common.SampleScheduleResponseLC();
             string strObj = JsonConvert.SerializeObject(jsonObject, Formatting.Indented);
             AdjustTextOutput(strObj, true);
-
-            var jsonDef = new { Name = "" };
-            var jsonObj = JsonConvert.DeserializeAnonymousType(strObj, jsonDef);
-            string jsonName = jsonObj.Name;
-            if (jsonName == "ScheduleResponseLC")
-            {
-                AdjustTextOutput("Name = " + jsonName.ToString(), false);
-                var jResponseLC = JsonConvert.DeserializeObject<ScheduleResponseModel>(strObj);
-                int timCount = 0;
-                foreach (var tim in jResponseLC.TimeStamps)
-                {
-                    AdjustTextOutput("TimeStamps: [" + timCount.ToString() +
-                        "] Source = " + tim.Source.ToString() +
-                        ", TimeStamp = " + tim.Timestamp.ToString(), false);
-                    timCount++;
-                }
-                int cmdCount = 0;
-                foreach (var cmd in jResponseLC.CommandEvents)
-                {
-                    AdjustTextOutput("CommandEvents: [" + cmdCount.ToString() +
-                        "] EventID = " + cmd.EventID.ToString() +
-                        ", Enable = " + cmd.Enable.ToString() +
-                        ", PVSFn = " + cmd.PVSFn.ToString() +
-                        ", StartHour = " + cmd.StartHour.ToString() +
-                        ", StartMin = " + cmd.StartMin.ToString() +
-                        ", PpoiMW = " + cmd.PpoiMW.ToString() +
-                        ", AVRMode = " + cmd.AVRMode.ToString() +
-                        ", QpoiMvar = " + cmd.QpoiMvar.ToString() +
-                        ", PFTrgt = " + cmd.PFTrgt.ToString() +
-                        ", VTrgtkV = " + cmd.VTrgtkV.ToString() +
-                        ", RmpRateMWmin = " + cmd.RmpRateMWmin.ToString() +
-                        ", PpvsMW = " + cmd.PpvsMW.ToString() +
-                        ", PcMW = " + cmd.PcMW.ToString() +
-                        ", ChgPr = " + cmd.ChgPr.ToString() +
-                        ", PdMW = " + cmd.PdMW.ToString() +
-                        ", SOCMaxPct = " + cmd.SOCMaxPct.ToString() +
-                        ", SOCMinPct = " + cmd.SOCMinPct.ToString() +
-                        ", GCen = " + cmd.GCen.ToString(), false);
-                    cmdCount++;
-                }
-            }
-            else
-            {
-                AdjustTextOutput("Invalid JSON", false);
-            }
+            DisplayObjectDetailsToOutput(strObj);
         }
 
         private async void butPostScheduleRequestCL_Click(object sender, EventArgs e)
         {
-            string conURL = Constants.PVSWebApiUrl + "ScheduleRequestCL";
+            string conURL = ConfigurationManager.AppSettings.Get("PVSWebApiUrl") + "ScheduleRequestCL";
             string strDebug = string.Empty;
-
             HmacClientHandler hmacClientHandler = new HmacClientHandler();
             HttpClient client = HttpClientFactory.Create(hmacClientHandler);
-            ScheduleRequestModel jsonObject = PVSLibrary.Common.SampleScheduleRequestCL();
+            ScheduleRequest jsonObject = PVSLibrary.Common.SampleScheduleRequestCL();
             HttpResponseMessage response = await client.PostAsJsonAsync(conURL, jsonObject);
             if (response.IsSuccessStatusCode)
             {
                 string encContent = await response.Content.ReadAsStringAsync();
                 encContent = encContent.Trim('"');
-                string strContent = Decrypt(encContent, Constants.PVSEncryptKey, true);
-                strDebug = "Success. Response.Content: " + strContent;
+                string strContent = Decrypt(encContent, ConfigurationManager.AppSettings.Get("PVSEncryptKey"), true);
+                strDebug = $"Success. Response.Content: { strContent }";
                 AdjustTextOutput(strDebug, false);
 
                 var jsonDef = new { Name = "" };
@@ -161,39 +82,8 @@ namespace PVSUI
                 if (jsonName == "ScheduleResponseLC")
                 {
                     AdjustTextOutput("Name = " + jsonName.ToString(), false);
-                    var jResponseLC = JsonConvert.DeserializeObject<ScheduleResponseModel>(strContent);
-                    int timCount = 0;
-                    foreach (var tim in jResponseLC.TimeStamps)
-                    {
-                        AdjustTextOutput("TimeStamps: [" + timCount.ToString() +
-                            "] Source = " + tim.Source.ToString() +
-                            ", TimeStamp = " + tim.Timestamp.ToString(), false);
-                        timCount++;
-                    }
-                    int cmdCount = 0;
-                    foreach (var cmd in jResponseLC.CommandEvents)
-                    {
-                        AdjustTextOutput("CommandEvents: [" + cmdCount.ToString() +
-                            "] EventID = " + cmd.EventID.ToString() +
-                            ", Enable = " + cmd.Enable.ToString() +
-                            ", PVSFn = " + cmd.PVSFn.ToString() +
-                            ", StartHour = " + cmd.StartHour.ToString() +
-                            ", StartMin = " + cmd.StartMin.ToString() +
-                            ", PpoiMW = " + cmd.PpoiMW.ToString() +
-                            ", AVRMode = " + cmd.AVRMode.ToString() +
-                            ", QpoiMvar = " + cmd.QpoiMvar.ToString() +
-                            ", PFTrgt = " + cmd.PFTrgt.ToString() +
-                            ", VTrgtkV = " + cmd.VTrgtkV.ToString() +
-                            ", RmpRateMWmin = " + cmd.RmpRateMWmin.ToString() +
-                            ", PpvsMW = " + cmd.PpvsMW.ToString() +
-                            ", PcMW = " + cmd.PcMW.ToString() +
-                            ", ChgPr = " + cmd.ChgPr.ToString() +
-                            ", PdMW = " + cmd.PdMW.ToString() +
-                            ", SOCMaxPct = " + cmd.SOCMaxPct.ToString() +
-                            ", SOCMinPct = " + cmd.SOCMinPct.ToString() +
-                            ", GCen = " + cmd.GCen.ToString(), false);
-                        cmdCount++;
-                    }
+                    var jResponseLC = JsonConvert.DeserializeObject<ScheduleResponse>(strContent);
+                    DisplayObjectDetailsToOutput(strContent);
                 }
                 else
                 {
@@ -205,6 +95,69 @@ namespace PVSUI
             {
                 strDebug = "Failed to call the API. HTTP Status: " + response.StatusCode + ", Reason: " + response.ReasonPhrase;
                 AdjustTextOutput(strDebug, false);
+            }
+        }
+
+        private void DisplayObjectDetailsToOutput(string jsonObject)
+        {
+            var jsonDef = new { Name = "" };
+            var jsonObj = JsonConvert.DeserializeAnonymousType(jsonObject, jsonDef);
+            string jsonName = jsonObj.Name;
+            switch (jsonName)
+            {
+                case "ScheduleRequestCL":
+                    AdjustTextOutput($"Name = { jsonName.ToString() }", false);
+                    var jRequest = JsonConvert.DeserializeObject<ScheduleRequest>(jsonObject);
+                    AdjustTextOutput($"TimeStamp Count = { jRequest.TimeStamps.Count.ToString() }", false);
+                    foreach (var TimeStamp in jRequest.TimeStamps)
+                    {
+                        AdjustTextOutput($"Timestamps: Source = { TimeStamp.Source.ToString() }" +
+                            $", TimeStamp = { TimeStamp.Timestamp.ToString() }", false);
+                    }
+                    AdjustTextOutput($"Battery Count = { jRequest.Batteries.Count.ToString() }", false);
+                    foreach (var Battery in jRequest.Batteries)
+                    {
+                        AdjustTextOutput($"Batteries: ID = { Battery.BatteryID.ToString() }" +
+                            $", SOCMwh = { Battery.SOCMwH.ToString() }" +
+                            $", SOCPer = { Battery.SOCPer.ToString() }" +
+                            $", SOHPer = {Battery.SOHPer.ToString() }", false);
+                    }
+                    break;
+                case "ScheduleResponseLC":
+                    AdjustTextOutput("Name = " + jsonName.ToString(), false);
+                    var jResponse = JsonConvert.DeserializeObject<ScheduleResponse>(jsonObject);
+                    AdjustTextOutput($"TimeStamp Count = { jResponse.TimeStamps.Count.ToString() }", false);
+                    foreach (var TimeStamp in jResponse.TimeStamps)
+                    {
+                        AdjustTextOutput($"Timestamps: Source = { TimeStamp.Source.ToString() }, TimeStamp = { TimeStamp.Timestamp.ToString() }", false);
+                    }
+                    AdjustTextOutput($"CommandEvent Count = { jResponse.CommandEvents.Count.ToString() }", false);
+                    foreach (var CommandEvent in jResponse.CommandEvents)
+                    {
+                        AdjustTextOutput($"CommandEvents: EventID = { CommandEvent.EventID.ToString() }" +
+                            $", Enable = { CommandEvent.Enable.ToString() }" +
+                            $", PVSFn = { CommandEvent.PVSFn.ToString() }" +
+                            $", StartHour = { CommandEvent.StartHour.ToString() }" +
+                            $", StartMin = { CommandEvent.StartMin.ToString() }" +
+                            $", PpoiMW = { CommandEvent.PpoiMW.ToString() }" +
+                            $", AVRMode = { CommandEvent.AVRMode.ToString() }" +
+                            $", QpoiMvar = { CommandEvent.QpoiMvar.ToString() }" +
+                            $", PFTrgt = { CommandEvent.PFTrgt.ToString() }" +
+                            $", VTrgtkV = { CommandEvent.VTrgtkV.ToString() }" +
+                            $", RmpRateMWmin = { CommandEvent.RmpRateMWmin.ToString() }" +
+                            $", PpvsMW = { CommandEvent.PpvsMW.ToString() }" +
+                            $", PcMW = { CommandEvent.PcMW.ToString() }" +
+                            $", ChgPr = { CommandEvent.ChgPr.ToString() }" +
+                            $", PdMW = { CommandEvent.PdMW.ToString() }" +
+                            $", SOCMaxPct = { CommandEvent.SOCMaxPct.ToString() }" +
+                            $", SOCMinPct = { CommandEvent.SOCMinPct.ToString() }" +
+                            $", GCen = { CommandEvent.GCen.ToString() }", false);
+                    }
+
+                    break;
+                default:
+                    AdjustTextOutput("Invalid JSON", false);
+                    break;
             }
         }
 
@@ -229,12 +182,12 @@ namespace PVSUI
 
         private void SetBackColorHighlight(object button, string namemask)
         {
-            foreach (var btn in GetAllControls(this, typeof(Button)))
+            foreach (var Control in GetAllControls(this, typeof(Button)))
             {
-                if (btn.Name.ToLower().Contains(namemask.ToLower()))
+                if (Control.Name.ToLower().Contains(namemask.ToLower()))
                 {
-                    (btn as Button).BackColor = Color.White;
-                    (btn as Button).ForeColor = Color.FromArgb(51, 153, 255);
+                    (Control as Button).BackColor = Color.White;
+                    (Control as Button).ForeColor = Color.FromArgb(51, 153, 255);
                 }
             }
             Button clickedButton = (Button)button;
@@ -265,7 +218,7 @@ namespace PVSUI
                 TimeSpan reqTimeSpan = DateTime.UtcNow - reqEpochStart;
                 string reqTimeStamp = Convert.ToUInt64(reqTimeSpan.TotalSeconds).ToString();
 
-                string reqNonce = Guid.NewGuid().ToString(Constants.PVSNonce);
+                string reqNonce = Guid.NewGuid().ToString(ConfigurationManager.AppSettings.Get("PVSNonce"));
 
                 if (request.Content != null)
                 {
@@ -276,15 +229,15 @@ namespace PVSUI
                 }
 
                 //Creating the raw signature string
-                string signatureRawData = String.Format("{0}{1}{2}{3}{4}{5}", Constants.PVSAppKey, reqHttpMethod, reqUri, reqTimeStamp, reqNonce, reqContentBase64String);
-                var secretKeyByteArray = Convert.FromBase64String(Constants.PVSHMACKey);
+                string signatureRawData = String.Format("{0}{1}{2}{3}{4}{5}", ConfigurationManager.AppSettings.Get("PVSAppKey"), reqHttpMethod, reqUri, reqTimeStamp, reqNonce, reqContentBase64String);
+                var secretKeyByteArray = Convert.FromBase64String(ConfigurationManager.AppSettings.Get("PVSHMACKey"));
                 byte[] signature = Encoding.UTF8.GetBytes(signatureRawData);
                 using (HMACSHA256 hmac = new HMACSHA256(secretKeyByteArray))
                 {
                     byte[] signatureBytes = hmac.ComputeHash(signature);
                     string reqSignatureBase64String = Convert.ToBase64String(signatureBytes);
-                    string reqHeadAuthParam = string.Format("{0}:{1}:{2}:{3}", Constants.PVSAppKey, reqSignatureBase64String, reqNonce, reqTimeStamp);
-                    request.Headers.Authorization = new AuthenticationHeaderValue(Constants.PVSScheme, reqHeadAuthParam);
+                    string reqHeadAuthParam = string.Format("{0}:{1}:{2}:{3}", ConfigurationManager.AppSettings.Get("PVSAppKey"), reqSignatureBase64String, reqNonce, reqTimeStamp);
+                    request.Headers.Authorization = new AuthenticationHeaderValue(ConfigurationManager.AppSettings.Get("PVSScheme"), reqHeadAuthParam);
                 }
                 response = await base.SendAsync(request, cancellationToken);
                 return response;
@@ -306,8 +259,8 @@ namespace PVSUI
 
         private void butKeyAdd_Click(object sender, EventArgs e)
         {
-            AdjustTextOutput("App Key = " + Constants.PVSAppKey + " (" + Constants.PVSAppKey.Length.ToString() + ")", true);
-            AdjustTextOutput("Secret Key = " + Constants.PVSHMACKey + " (" + Constants.PVSHMACKey.Length.ToString() + ")", false);
+            AdjustTextOutput("App Key = " + ConfigurationManager.AppSettings.Get("PVSAppKey"), true);
+            AdjustTextOutput("Secret Key = " + ConfigurationManager.AppSettings.Get("PVSHMACKey"), false);
             Guid g = new Guid();
             string AppKey = string.Empty;
             string SecretKey = string.Empty;
@@ -376,7 +329,6 @@ namespace PVSUI
             tdes.Clear();
             return UTF8Encoding.UTF8.GetString(resultArray);
         }
-
         private void butExit_Click(object sender, EventArgs e)
         {
             if (System.Windows.Forms.Application.MessageLoop)
@@ -390,15 +342,5 @@ namespace PVSUI
                 System.Environment.Exit(1);
             }
         }
-    }
-
-    static class Constants
-    {
-        public const string PVSWebApiUrl = "http://localhost:16188/api/";
-        public const string PVSAppKey = "4d53bce03ec34c0a911182d4c228ee6c";
-        public const string PVSHMACKey = "A93reRTUJHsCuQSHR+L3GxqOJyDmQpCgps102ciuabc=";
-        public const string PVSEncryptKey = "k6KUvMXYy2I6J5y5hTTgsqG8E2VDL64JhFtPjBB//sU=";
-        public const string PVSScheme = "pvss";
-        public const string PVSNonce = "N";
     }
 }

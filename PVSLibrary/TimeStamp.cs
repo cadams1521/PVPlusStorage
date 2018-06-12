@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace PVSLibrary
 {
-    public class TimeStampModel
+    public class TimeStamp
     {
         /// <summary>
         /// Represent the system that created this timestamp

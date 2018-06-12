@@ -1,6 +1,6 @@
 ﻿namespace PVSLibrary
 {
-    public class CommandEventModel
+    public class CommandEvent
     {
         /// <summary>
         /// Order of the events. Does not have to correspond to order of execution

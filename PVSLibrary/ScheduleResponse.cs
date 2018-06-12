@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace PVSLibrary
 {
-    public class ScheduleResponseModel
+    public class ScheduleResponse
     {
         /// <summary>
         /// Represents the name of the model
@@ -15,10 +15,10 @@ namespace PVSLibrary
         /// <summary>
         /// Represents a list of all the date/time value of when this model data was prepared (format: yyyyMMddHHmmss)
         /// </summary>
-        public List<TimeStampModel> TimeStamps { get; set; } = new List<TimeStampModel>();
+        public List<TimeStamp> TimeStamps { get; set; } = new List<TimeStamp>();
         /// <summary>
         /// Represents a list of all commands and their value for this plant
         /// </summary>
-        public List<CommandEventModel> CommandEvents { get; set; } = new List<CommandEventModel>();
+        public List<CommandEvent> CommandEvents { get; set; } = new List<CommandEvent>();
     }
 }

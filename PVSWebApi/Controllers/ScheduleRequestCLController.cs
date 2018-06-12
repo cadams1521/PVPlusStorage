@@ -18,40 +18,14 @@ namespace PVSWebApi.Controllers
     {
         // POST api/ScheduleRequestCL {object}
         [Route("ScheduleRequestCL")]
-        public IHttpActionResult Post(ScheduleRequestModel ScheduleRequestCL)
+        public IHttpActionResult Post(ScheduleRequest ScheduleRequestCL)
         {
             string strObj = JsonConvert.SerializeObject(ScheduleRequestCL, Formatting.None);
-
             var jsonDef = new { Name = "" };
             var jsonObj = JsonConvert.DeserializeAnonymousType(strObj, jsonDef);
             string jsonName = jsonObj.Name;
             if (jsonName == "ScheduleRequestCL")
             {
-                var jRequestCL = JsonConvert.DeserializeObject<ScheduleRequestModel>(strObj);
-                int timCount = jRequestCL.TimeStamps.Count;
-                var strSource = new string[timCount];
-                var strTimeStamp = new string[timCount];
-                var i = 0;
-                foreach (var tim in jRequestCL.TimeStamps)
-                {
-                    strSource[i] = tim.Source.ToString();
-                    strTimeStamp[i] = tim.Timestamp.ToString();
-                    i++;
-                }
-                int batCount = jRequestCL.Batteries.Count;
-                var strBatteryID = new string[batCount];
-                var strSOCMwH = new string[batCount];
-                var strSOCPer = new string[batCount];
-                var strSOHPer = new string[batCount];
-                i = 0;
-                foreach (var bat in jRequestCL.Batteries)
-                {
-                    strBatteryID[i] = bat.BatteryID.ToString();
-                    strSOCMwH[i] = bat.SOCMwH.ToString();
-                    strSOCPer[i] = bat.SOCPer.ToString();
-                    strSOHPer[i] = bat.SOHPer.ToString();
-                    i++;
-                }
                 return Ok(EncryptResponse("SampleScheduleResponseLC"));
             }
             else
@@ -67,7 +41,7 @@ namespace PVSWebApi.Controllers
             switch (strClass)
             {
                 case "SampleScheduleResponseLC":
-                    ScheduleResponseModel resp = new ScheduleResponseModel();
+                    ScheduleResponse resp = new ScheduleResponse();
                     resp = PVSLibrary.Common.SampleScheduleResponseLC();
                     string strObj = JsonConvert.SerializeObject(resp, Formatting.None);
                     encResp = Encrypt(strObj, "k6KUvMXYy2I6J5y5hTTgsqG8E2VDL64JhFtPjBB//sU=", true);

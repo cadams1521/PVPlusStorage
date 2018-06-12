@@ -36,13 +36,13 @@
     <Reference Include="System.Net.Http" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="BatteryModel.cs" />
-    <Compile Include="CommandEventModel.cs" />
+    <Compile Include="Battery.cs" />
+    <Compile Include="CommandEvent.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Common.cs" />
-    <Compile Include="ScheduleRequestModel.cs" />
-    <Compile Include="ScheduleResponseModel.cs" />
-    <Compile Include="TimeStampModel.cs" />
+    <Compile Include="ScheduleRequest.cs" />
+    <Compile Include="ScheduleResponse.cs" />
+    <Compile Include="TimeStamp.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

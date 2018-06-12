@@ -1,6 +1,6 @@
 ﻿namespace PVSLibrary
 {
-    public class BatteryModel
+    public class Battery
     {
         /// <summary>
         /// Represents the unique id value of the battery
